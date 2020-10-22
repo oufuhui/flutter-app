@@ -1,13 +1,14 @@
 import 'package:dio/dio.dart';
 
-class HTTPConfig {
-  static const baseURL = "";
-  static const timeout = 1000;
-}
-
 class Api {
+  static const baseURL =
+      "https://github.com/oufuhui/flutter-resources/blob/master/notice.json";
+  static const timeout = 5000;
+  static const receiveTimeout = 3000;
   static final BaseOptions options = BaseOptions(
-      baseUrl: HTTPConfig.baseURL, connectTimeout: HTTPConfig.timeout);
+      baseUrl: baseURL,
+      connectTimeout: timeout,
+      receiveTimeout: receiveTimeout);
   static final Dio dio = Dio(options);
 
   static Future<T> request<T>(String url,
