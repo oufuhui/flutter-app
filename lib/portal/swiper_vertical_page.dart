@@ -22,9 +22,13 @@ class SwiperVerticalPageState extends State<SwiperVerticalPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width - 120,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width - 120,
       height: 50,
       child: Swiper(
+        key: UniqueKey(),
         itemBuilder: _swiperBuilder,
         itemCount: notices.length,
         scrollDirection: Axis.vertical,
@@ -37,13 +41,21 @@ class SwiperVerticalPageState extends State<SwiperVerticalPage> {
   @override
   void initState() {
     super.initState();
+    // List<Notice> noticeList = await _dataService.getNotice();
+    // setState(() {
+    //   this.notices = noticeList;
+    // });
     _dataService.getNotice().then(
-        (notices) => {
-              setState(() {
-                this.notices = notices;
-              })
-            },
-        onError: (error) {});
+            (notices) =>
+        {
+          setState(() {
+            print("success:$notices");
+            this.notices = notices;
+          })
+        },
+        onError: (error) {
+          print("error:$error");
+        });
   }
 
   Widget _swiperBuilder(BuildContext context, int index) {

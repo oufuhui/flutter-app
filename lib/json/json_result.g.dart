@@ -8,7 +8,7 @@ part of 'json_result.dart';
 
 JsonResult _$JsonResultFromJson(Map<String, dynamic> json) {
   return JsonResult(
-      json['code'] as int, json['msg'] as String, json['data'] as String);
+      json['code'] as int, json['msg'] as String, json['data'] );
 }
 
 Map<String, dynamic> _$JsonResultToJson(JsonResult instance) =>
