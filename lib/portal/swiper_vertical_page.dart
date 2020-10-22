@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'file:///E:/oufuhui/git/flutter_app/lib/data/mock_api.dart';
+import 'package:flutter_app/data/mock_api.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutter_app/size_config.dart';
-import 'file:///E:/oufuhui/git/flutter_app/lib/data/model/mockdata.dart';
+import 'package:flutter_app/data/model/mockdata.dart';
 import 'package:flutter_app/json/notice.dart';
 import 'package:flutter_app/data/remote_service.dart';
 
@@ -16,6 +16,9 @@ class SwiperVerticalPage extends StatefulWidget {
 }
 
 class SwiperVerticalPageState extends State<SwiperVerticalPage> {
+  RemoteService _dataService = RemoteService();
+  List<Notice> notices = [];
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -23,7 +26,7 @@ class SwiperVerticalPageState extends State<SwiperVerticalPage> {
       height: 50,
       child: Swiper(
         itemBuilder: _swiperBuilder,
-        itemCount: 3,
+        itemCount: notices.length,
         scrollDirection: Axis.vertical,
         autoplay: true,
         onTap: (index) => print('点击了第$index个'),
@@ -31,19 +34,24 @@ class SwiperVerticalPageState extends State<SwiperVerticalPage> {
     );
   }
 
-  Widget _swiperBuilder(BuildContext context, int index) {
-    final newList = [
-      '新大陆APP健身预约系统上线啦！',
-      '关于2020年中秋节、国庆节放假通知',
-      '关于新大陆2021届校招直播带岗主持人征集通知'
-    ];
+  @override
+  void initState() {
+    super.initState();
+    _dataService.getNotice().then(
+        (notices) => {
+              setState(() {
+                this.notices = notices;
+              })
+            },
+        onError: (error) {});
+  }
 
-    List list = RemoteService().getNotice()
+  Widget _swiperBuilder(BuildContext context, int index) {
     return Container(
       alignment: Alignment(-1, 0),
       child: Padding(
         padding: const EdgeInsets.only(left: 10.0),
-        child: Text(list[index].title,
+        child: Text(notices[index].title,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.start,
             style: TextStyle(fontSize: 20)),
