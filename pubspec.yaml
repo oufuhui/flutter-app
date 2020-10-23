@@ -56,6 +56,8 @@ flutter:
     - images/test1.png
 
     - assets/json/notice.json
+    - assets/json/news.json
+    - assets/json/pic.json
       #   - images/a_dot_ham.jpeg
 
       # An image asset can refer to one or more resolution-specific "variants", see

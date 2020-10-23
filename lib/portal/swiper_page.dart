@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/json/pic.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 
 class SwiperPage extends StatefulWidget {
+  List<Pic> pics;
+
+  SwiperPage(this.pics);
+
   @override
   SwiperPageState createState() {
     return SwiperPageState();
@@ -65,6 +70,6 @@ class SwiperPageState extends State<SwiperPage> {
   Widget _swiperBuilder(BuildContext context, int index) {
     return ClipRRect(
         borderRadius: BorderRadius.circular(8.0),
-        child: Image.asset('images/test1.png', fit: BoxFit.cover));
+        child: Image.network(widget.pics[index].url, fit: BoxFit.cover));
   }
 }

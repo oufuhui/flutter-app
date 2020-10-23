@@ -2,14 +2,6 @@ import 'package:json_annotation/json_annotation.dart';
   
 part 'pic.g.dart';
 
-
-List<Pic> getpicList(List<dynamic> list){
-    List<Pic> result = [];
-    list.forEach((item){
-      result.add(Pic.fromJson(item));
-    });
-    return result;
-  }
 @JsonSerializable()
   class Pic extends Object {
 
@@ -22,6 +14,13 @@ List<Pic> getpicList(List<dynamic> list){
 
   Map<String, dynamic> toJson() => _$PicToJson(this);
 
+  static List<Pic> getpicList(List<dynamic> list){
+    List<Pic> result = [];
+    list.forEach((item){
+      result.add(Pic.fromJson(item));
+    });
+    return result;
+  }
 }
 
   

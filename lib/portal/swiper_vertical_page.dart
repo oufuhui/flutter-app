@@ -9,6 +9,10 @@ import 'package:flutter_app/json/notice.dart';
 import 'package:flutter_app/data/remote_service.dart';
 
 class SwiperVerticalPage extends StatefulWidget {
+  List<Notice> notices = [];
+
+  SwiperVerticalPage(this.notices);
+
   @override
   SwiperVerticalPageState createState() {
     return SwiperVerticalPageState();
@@ -16,8 +20,6 @@ class SwiperVerticalPage extends StatefulWidget {
 }
 
 class SwiperVerticalPageState extends State<SwiperVerticalPage> {
-  RemoteService _dataService = RemoteService();
-  List<Notice> notices = [];
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +32,7 @@ class SwiperVerticalPageState extends State<SwiperVerticalPage> {
       child: Swiper(
         key: UniqueKey(),
         itemBuilder: _swiperBuilder,
-        itemCount: notices.length,
+        itemCount: widget.notices.length,
         scrollDirection: Axis.vertical,
         autoplay: true,
         onTap: (index) => print('点击了第$index个'),
@@ -41,21 +43,6 @@ class SwiperVerticalPageState extends State<SwiperVerticalPage> {
   @override
   void initState() {
     super.initState();
-    // List<Notice> noticeList = await _dataService.getNotice();
-    // setState(() {
-    //   this.notices = noticeList;
-    // });
-    _dataService.getNotice().then(
-            (notices) =>
-        {
-          setState(() {
-            print("success:$notices");
-            this.notices = notices;
-          })
-        },
-        onError: (error) {
-          print("error:$error");
-        });
   }
 
   Widget _swiperBuilder(BuildContext context, int index) {
@@ -63,7 +50,7 @@ class SwiperVerticalPageState extends State<SwiperVerticalPage> {
       alignment: Alignment(-1, 0),
       child: Padding(
         padding: const EdgeInsets.only(left: 10.0),
-        child: Text(notices[index].title,
+        child: Text(widget.notices[index].title,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.start,
             style: TextStyle(fontSize: 20)),

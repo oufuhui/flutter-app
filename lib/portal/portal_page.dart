@@ -1,21 +1,53 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/data/model/news_item.dart';
 import 'package:flutter_app/data/model/portal_item.dart';
+import 'package:flutter_app/data/remote_service.dart';
+import 'package:flutter_app/data/viewmodel/portal_viewmodel.dart';
+import 'package:flutter_app/json/news.dart';
+import 'package:flutter_app/json/notice.dart';
+import 'package:flutter_app/json/pic.dart';
 import 'package:flutter_app/size_config.dart';
 import 'swiper_page.dart';
 import 'swiper_vertical_page.dart';
+import 'dart:convert';
+class PortalPage extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return PortalPageState();
+  }
+}
 
-class PortalPage extends StatelessWidget {
+class PortalPageState extends State<PortalPage> {
+  RemoteService _dataService = RemoteService();
+  PortalViewModel portalViewModel;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PortalContent(),
+      body: PortalContent(portalViewModel?.notices ?? [],
+          portalViewModel?.news ?? [], portalViewModel?.pics ?? []),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _dataService.getPortalViewModel().then((value) {
+      setState(() {
+        this.portalViewModel = value;
+      });
+      print(value);
+    }).catchError((error) => print(error));
   }
 }
 
 class PortalContent extends StatelessWidget {
+  List<Notice> notices = [];
+  List<News> newsItems = [];
+  List<Pic> pics = [];
+
+  PortalContent(this.notices, this.newsItems, this.pics);
+
   final List<PortalItem> portalItems = [
     PortalItem(title: "商旅服务", icon: Icons.work_outlined),
     PortalItem(title: "移动考勤", icon: Icons.access_time_outlined),
@@ -27,22 +59,6 @@ class PortalContent extends StatelessWidget {
     PortalItem(title: "名企微贷", icon: Icons.widgets),
     PortalItem(title: "益农商城", icon: Icons.account_balance_outlined),
     PortalItem(title: "健康上报", icon: Icons.add_comment_outlined)
-  ];
-
-  final List<NewsItem> newsItems = [
-    NewsItem(
-        title: "福建省数字经济重大项目集中签约——新大陆与邵武市人民政府、卓理股份有限公司签订三方协议",
-        time: "2020-10-15 08:55:55"),
-    NewsItem(
-        title: "新大陆承建——福建“农业云131”项目惊艳亮相第三届“数字中国”成果展",
-        time: "2020-10-15 08:55:55"),
-    NewsItem(
-        title: "打造“数字中国”的先锋示范区 ——王晶在第三届数字中国建设峰会“数字福建”分论坛上的演讲",
-        time: "2020-10-15 08:55:55"),
-    NewsItem(
-        title: "新时代、新基建——CTID平台亮相第三届数字中国建设峰会", time: "2020-10-15 08:55:55"),
-    NewsItem(
-        title: "CTID“网证+”场景亮相峰会，新大陆助力共建数字身份新生态", time: "2020-10-15 08:55:55"),
   ];
 
   @override
@@ -57,7 +73,7 @@ class PortalContent extends StatelessWidget {
               expandedHeight: 160.0,
               backgroundColor: Colors.blue,
               flexibleSpace: FlexibleSpaceBar(
-                background: TitleContent(),
+                background: TitleContent(),//用child在向上滑动时会超出边界
               ),
             ),
             SliverList(
@@ -74,7 +90,7 @@ class PortalContent extends StatelessWidget {
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontSize: 22, fontWeight: FontWeight.w600)),
-                        SwiperVerticalPage(),
+                        SwiperVerticalPage(this.notices),
                         Expanded(
                             child: IconButton(
                                 icon: Icon(
@@ -105,15 +121,16 @@ class PortalContent extends StatelessWidget {
             ),
             SliverList(
                 delegate: SliverChildBuilderDelegate((context, index) {
-              return SwiperPage();
+              return SwiperPage(this.pics);
             }, childCount: 1)),
             SliverList(
                 delegate: SliverChildBuilderDelegate(
               (context, index) {
                 final item = newsItems[index];
-                return NewListContent(title: item.title, time: item.time);
+                return NewListContent(
+                    url: item.url, title: item.title, time: item.time);
               },
-              childCount: 5,
+              childCount: newsItems.length,
             ))
           ],
         ),
@@ -128,8 +145,10 @@ class PortalContent extends StatelessWidget {
 class NewListContent extends StatelessWidget {
   final String title;
   final String time;
+  final String url;
 
-  const NewListContent({Key key, this.title, this.time}) : super(key: key);
+  const NewListContent({Key key, this.url, this.title, this.time})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -144,7 +163,7 @@ class NewListContent extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Image.asset('images/test.png',
+          Image.network(url,
               height: 60, width: 80, fit: BoxFit.cover),
           Expanded(
             child: Container(
@@ -165,49 +184,6 @@ class NewListContent extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class NewListView1 extends StatelessWidget {
-  final List<String> titleItems = <String>[
-    '福建省数字经济重大项目集中签约——新大陆与邵武市人民政府、卓理股份有限公司签订三方协议',
-    '新大陆承建——福建“农业云131”项目惊艳亮相第三届“数字中国”成果展',
-    '打造“数字中国”的先锋示范区 ——王晶在第三届数字中国建设峰会“数字福建”分论坛上的演讲',
-    '新时代、新基建——CTID平台亮相第三届数字中国建设峰会',
-    'CTID“网证+”场景亮相峰会，新大陆助力共建数字身份新生态',
-  ];
-
-  final List<String> subTitleItems = <String>[
-    '2020-10-15 08:55:55',
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return MediaQuery.removePadding(
-      removeTop: true,
-      context: context,
-      child: ListView.separated(
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: 5,
-        itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-            leading: Image.asset('images/test.png',
-                height: 120, width: 100, fit: BoxFit.cover),
-            title: Text(
-              titleItems[index],
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 18),
-            ),
-            subtitle: Text(
-              subTitleItems[index % 1],
-            ),
-          );
-        },
-        separatorBuilder: (BuildContext context, int index) {
-          return Divider(color: Colors.grey);
-        },
       ),
     );
   }

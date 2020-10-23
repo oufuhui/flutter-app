@@ -2,14 +2,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'news.g.dart';
 
-
-List<News> getnewsList(List<dynamic> list){
-  List<News> result = [];
-  list.forEach((item){
-    result.add(News.fromJson(item));
-  });
-  return result;
-}
 @JsonSerializable()
 class News extends Object {
 
@@ -28,6 +20,13 @@ class News extends Object {
 
   Map<String, dynamic> toJson() => _$NewsToJson(this);
 
+  static List<News> getnewsList(List<dynamic> list){
+    List<News> result = [];
+    list.forEach((item){
+      result.add(News.fromJson(item));
+    });
+    return result;
+  }
 }
 
   
